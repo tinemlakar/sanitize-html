@@ -27,9 +27,7 @@
     "escape-string-regexp": "^4.0.0",
     "htmlparser2": "^4.1.0",
     "is-plain-object": "^5.0.0",
-    "klona": "^2.0.3",
-    "parse-srcset": "^1.0.2",
-    "postcss": "^8.0.2"
+    "parse-srcset": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "^7.3.1",

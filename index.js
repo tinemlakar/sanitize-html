@@ -1,10 +1,10 @@
 const htmlparser = require('htmlparser2');
 const escapeStringRegexp = require('escape-string-regexp');
-const { klona } = require('klona');
+// const { klona } = require('klona');
 const { isPlainObject } = require('is-plain-object');
 const deepmerge = require('deepmerge');
 const parseSrcset = require('parse-srcset');
-const { parse: postcssParse } = require('postcss');
+// const { parse: postcssParse } = require('postcss');
 const url = require('url');
 // Tags that can conceivably represent stand-alone media.
 const mediaTags = [
@@ -384,15 +384,15 @@ function sanitizeHtml(html, options, _recursing) {
             }
             if (a === 'style') {
               try {
-                const abstractSyntaxTree = postcssParse(name + ' {' + value + '}');
-                const filteredAST = filterCss(abstractSyntaxTree, options.allowedStyles);
+                // const abstractSyntaxTree = postcssParse(name + ' {' + value + '}');
+                // const filteredAST = filterCss(abstractSyntaxTree, options.allowedStyles);
 
-                value = stringifyStyleAttributes(filteredAST);
+                // value = stringifyStyleAttributes(filteredAST);
 
-                if (value.length === 0) {
-                  delete frame.attribs[a];
-                  return;
-                }
+                // if (value.length === 0) {
+                delete frame.attribs[a];
+                return;
+                // }
               } catch (e) {
                 delete frame.attribs[a];
                 return;
@@ -588,31 +588,31 @@ function sanitizeHtml(html, options, _recursing) {
    * @param {object} allowedStyles       - Keys are properties (i.e color), value is list of permitted regex rules (i.e /green/i).
    * @return {object}                    - Abstract Syntax Tree with filtered style attributes.
    */
-  function filterCss(abstractSyntaxTree, allowedStyles) {
-    if (!allowedStyles) {
-      return abstractSyntaxTree;
-    }
+  // function filterCss(abstractSyntaxTree, allowedStyles) {
+  //   if (!allowedStyles) {
+  //     return abstractSyntaxTree;
+  //   }
 
-    const filteredAST = klona(abstractSyntaxTree);
-    const astRules = abstractSyntaxTree.nodes[0];
-    let selectedRule;
+  //   const filteredAST = klona(abstractSyntaxTree);
+  //   const astRules = abstractSyntaxTree.nodes[0];
+  //   let selectedRule;
 
-    // Merge global and tag-specific styles into new AST.
-    if (allowedStyles[astRules.selector] && allowedStyles['*']) {
-      selectedRule = deepmerge(
-        allowedStyles[astRules.selector],
-        allowedStyles['*']
-      );
-    } else {
-      selectedRule = allowedStyles[astRules.selector] || allowedStyles['*'];
-    }
+  //   // Merge global and tag-specific styles into new AST.
+  //   if (allowedStyles[astRules.selector] && allowedStyles['*']) {
+  //     selectedRule = deepmerge(
+  //       allowedStyles[astRules.selector],
+  //       allowedStyles['*']
+  //     );
+  //   } else {
+  //     selectedRule = allowedStyles[astRules.selector] || allowedStyles['*'];
+  //   }
 
-    if (selectedRule) {
-      filteredAST.nodes[0].nodes = astRules.nodes.reduce(filterDeclarations(selectedRule), []);
-    }
+  //   if (selectedRule) {
+  //     filteredAST.nodes[0].nodes = astRules.nodes.reduce(filterDeclarations(selectedRule), []);
+  //   }
 
-    return filteredAST;
-  }
+  //   return filteredAST;
+  // }
 
   /**
    * Extracts the style attribues from an AbstractSyntaxTree and formats those
@@ -621,16 +621,16 @@ function sanitizeHtml(html, options, _recursing) {
    * @param  {AbstractSyntaxTree} filteredAST
    * @return {string}             - Example: "color:yellow;text-align:center;font-family:helvetica;"
    */
-  function stringifyStyleAttributes(filteredAST) {
-    return filteredAST.nodes[0].nodes
-      .reduce(function(extractedAttributes, attributeObject) {
-        extractedAttributes.push(
-          attributeObject.prop + ':' + attributeObject.value
-        );
-        return extractedAttributes;
-      }, [])
-      .join(';');
-  }
+  // function stringifyStyleAttributes(filteredAST) {
+  //   return filteredAST.nodes[0].nodes
+  //     .reduce(function(extractedAttributes, attributeObject) {
+  //       extractedAttributes.push(
+  //         attributeObject.prop + ':' + attributeObject.value
+  //       );
+  //       return extractedAttributes;
+  //     }, [])
+  //     .join(';');
+  // }
 
   /**
     * Filters the existing attributes for the given property. Discards any attributes
@@ -644,21 +644,21 @@ function sanitizeHtml(html, options, _recursing) {
     * @property {string} attributeObject.value  - The corresponding value to the css property, i.e 'red'.
     * @return {function}                        - When used in Array.reduce, will return an array of Declaration objects
     */
-  function filterDeclarations(selectedRule) {
-    return function (allowedDeclarationsList, attributeObject) {
-      // If this property is whitelisted...
-      if (has(selectedRule, attributeObject.prop)) {
-        const matchesRegex = selectedRule[attributeObject.prop].some(function(regularExpression) {
-          return regularExpression.test(attributeObject.value);
-        });
+  // function filterDeclarations(selectedRule) {
+  //   return function (allowedDeclarationsList, attributeObject) {
+  //     // If this property is whitelisted...
+  //     if (has(selectedRule, attributeObject.prop)) {
+  //       const matchesRegex = selectedRule[attributeObject.prop].some(function(regularExpression) {
+  //         return regularExpression.test(attributeObject.value);
+  //       });
 
-        if (matchesRegex) {
-          allowedDeclarationsList.push(attributeObject);
-        }
-      }
-      return allowedDeclarationsList;
-    };
-  }
+  //       if (matchesRegex) {
+  //         allowedDeclarationsList.push(attributeObject);
+  //       }
+  //     }
+  //     return allowedDeclarationsList;
+  //   };
+  // }
 
   function filterClasses(classes, allowed) {
     if (!allowed) {
